@@ -84,9 +84,9 @@ TUI/
 The addon is designed to be easily customizable. Key areas for modification:
 
 ### Colors and Styling
-- Edit `TuiUI.Core:CreateBackdrop()` in `Core/Core.lua` for frame backgrounds
+- Edit `TUI.Core:CreateBackdrop()` in `Core/Core.lua` for frame backgrounds
 - Modify color values in unit frame update functions
-- Adjust bar textures in `TuiUI.Utils:CreateStatusBar()`
+- Adjust bar textures in `TUI.Utils:CreateStatusBar()`
 
 ### Frame Sizes and Positions
 - Default sizes and positions are defined in `Core/Database.lua`
@@ -131,6 +131,11 @@ For issues or questions:
 - Test with a fresh character to rule out saved variable conflicts
 
 ## Version History
+
+### 1.0.1
+- Fixed initialization order bug that caused "attempt to index global TUI (a nil value)" error
+- Updated TOC file to load TUI.lua before Core modules
+- Cleaned up old TuiUI references in documentation
 
 ### 1.0.0
 - Initial release
