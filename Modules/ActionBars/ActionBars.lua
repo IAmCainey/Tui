@@ -75,7 +75,15 @@ function TUI.ActionBars:CreateActionButton(parent, actionSlot, buttonIndex)
     
     -- Create button with unique name
     local buttonName = "TUI_ActionButton" .. actionSlot
+    
+    -- Try to create button with ActionButtonTemplate, fallback to basic button if template fails
     local button = CreateFrame("CheckButton", buttonName, parent, "ActionButtonTemplate")
+    if not button then
+        -- Fallback: create basic button if ActionButtonTemplate doesn't work
+        DEFAULT_CHAT_FRAME:AddMessage("TUI: ActionButtonTemplate failed, creating basic button")
+        button = CreateFrame("CheckButton", buttonName, parent)
+    end
+    
     if not button then return nil end
     
     -- Set up essential button properties BEFORE calling any ActionButton functions
@@ -95,8 +103,12 @@ function TUI.ActionBars:CreateActionButton(parent, actionSlot, buttonIndex)
     
     -- Set up the cooldown frame (required for ActionButton functions)
     if not button.cooldown then
-        button.cooldown = CreateFrame("Cooldown", buttonName .. "Cooldown", button, "CooldownFrameTemplate")
+        -- In WoW 1.12.1, cooldown frames don't use templates
+        button.cooldown = CreateFrame("Cooldown", buttonName .. "Cooldown", button)
         button.cooldown:SetAllPoints(button)
+        -- Set up cooldown properties for 1.12.1
+        button.cooldown:SetDrawEdge(false)
+        button.cooldown:SetDrawSwipe(true)
     end
     
     -- Set up count text (required for stack counting)
@@ -194,6 +206,12 @@ function TUI.ActionBars:CreatePetBar()
     -- Create pet buttons
     for i = 1, 10 do
         local button = CreateFrame("CheckButton", "TUI_PetActionButton" .. i, frame, "PetActionButtonTemplate")
+        if not button then
+            -- Fallback: create basic button if PetActionButtonTemplate doesn't work
+            DEFAULT_CHAT_FRAME:AddMessage("TUI: PetActionButtonTemplate failed, creating basic button")
+            button = CreateFrame("CheckButton", "TUI_PetActionButton" .. i, frame)
+        end
+        
         if button then
             button:SetID(i)
             button:SetWidth(36)
@@ -236,10 +254,18 @@ function TUI.ActionBars:CreateStanceBar()
     -- Create stance buttons
     for i = 1, 10 do
         local button = CreateFrame("CheckButton", "TUI_StanceButton" .. i, frame, "StanceButtonTemplate")
-        button:SetID(i)
-        button:SetWidth(36)
-        button:SetHeight(36)
-        button:SetPoint("LEFT", frame, "LEFT", (i - 1) * 40, 0)
+        if not button then
+            -- Fallback: create basic button if StanceButtonTemplate doesn't work
+            DEFAULT_CHAT_FRAME:AddMessage("TUI: StanceButtonTemplate failed, creating basic button")
+            button = CreateFrame("CheckButton", "TUI_StanceButton" .. i, frame)
+        end
+        
+        if button then
+            button:SetID(i)
+            button:SetWidth(36)
+            button:SetHeight(36)
+            button:SetPoint("LEFT", frame, "LEFT", (i - 1) * 40, 0)
+        end
     end
     
     self.bars.stanceBar = frame

@@ -132,6 +132,12 @@ For issues or questions:
 
 ## Version History
 
+### 1.0.8
+- Fixed WoW 1.12.1 cooldown frame creation - removed non-existent CooldownFrameTemplate
+- Added fallback button creation for ActionButtonTemplate compatibility
+- Enhanced cooldown frame setup with proper 1.12.1 properties (SetDrawEdge, SetDrawSwipe)
+- Added defensive template checking with fallback to basic frames
+
 ### 1.0.7
 - Added comprehensive ActionButton initialization for WoW 1.12.1 compatibility
 - Implemented delayed ActionButton function calls to prevent initialization errors

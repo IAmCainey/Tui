@@ -12,6 +12,8 @@
 - ✅ **ActionButton initialization**: Comprehensive button setup with delayed ActionButton calls
 - ✅ **Error protection**: Added pcall protection around all ActionButton API calls
 - ✅ **Button components**: Proper icon, cooldown, count, and hotkey texture setup
+- ✅ **CooldownFrameTemplate**: Removed non-existent template, using basic Cooldown frame
+- ✅ **Template fallbacks**: Added fallback creation for ActionButtonTemplate compatibility
 
 ## Potential Areas to Monitor
 
@@ -65,6 +67,8 @@ ActionButton_UpdateCooldown = nil
 - Some ActionButton functions expect certain button properties to exist
 - Action slot numbers must be valid (1-120 in vanilla)
 - Button names must be unique and follow WoW naming conventions
+- CooldownFrameTemplate doesn't exist - use basic "Cooldown" frame type
+- Cooldown frames need SetDrawEdge(false) and SetDrawSwipe(true) in 1.12.1
 
 ### Alternative Solutions:
 If ActionButton errors persist, the addon includes:
