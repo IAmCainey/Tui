@@ -6,6 +6,9 @@
 ## SavedVariables: TUIDB
 ## SavedVariablesPerCharacter: TUICharDB
 
+# Main initialization (must be loaded first)
+TUI.lua
+
 # Core files
 Core\Core.lua
 Core\Database.lua
@@ -19,6 +22,3 @@ Modules\UnitFrames\TargetFrame.lua
 Modules\UnitFrames\TargetTargetFrame.lua
 Modules\GroupFrames\PartyFrames.lua
 Modules\GroupFrames\RaidFrames.lua
-
-# Main initialization
-TUI.lua
