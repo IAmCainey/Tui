@@ -132,6 +132,13 @@ For issues or questions:
 
 ## Version History
 
+### 1.0.7
+- Added comprehensive ActionButton initialization for WoW 1.12.1 compatibility
+- Implemented delayed ActionButton function calls to prevent initialization errors
+- Added pcall protection around all ActionButton API calls with error reporting
+- Enhanced button creation with proper icon, cooldown, count, and hotkey setup
+- Added action slot validation and comprehensive error handling
+
 ### 1.0.6
 - Fixed action button creation and event handling for WoW 1.12.1
 - Added defensive checks for all ActionButton API functions

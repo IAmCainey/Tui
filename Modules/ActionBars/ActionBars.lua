@@ -68,28 +68,82 @@ end
 
 -- Create action button
 function TUI.ActionBars:CreateActionButton(parent, actionSlot, buttonIndex)
-    local button = CreateFrame("CheckButton", "TUI_ActionButton" .. actionSlot, parent, "ActionButtonTemplate")
+    -- Ensure we have a valid action slot
+    if not actionSlot or actionSlot < 1 or actionSlot > 120 then
+        return nil
+    end
+    
+    -- Create button with unique name
+    local buttonName = "TUI_ActionButton" .. actionSlot
+    local button = CreateFrame("CheckButton", buttonName, parent, "ActionButtonTemplate")
     if not button then return nil end
     
+    -- Set up essential button properties BEFORE calling any ActionButton functions
     button:SetID(actionSlot)
     button:SetWidth(36)
     button:SetHeight(36)
     
-    -- Set up the button properties required for 1.12.1
+    -- Initialize required properties for 1.12.1 ActionButtonTemplate
     button.showgrid = 1
+    button.action = actionSlot
     
-    -- Initialize the button properly before calling ActionButton functions
-    if ActionButton_Update then
-        ActionButton_Update(button)
+    -- Set up the button icon texture (required for ActionButton functions)
+    if not button.icon then
+        button.icon = button:CreateTexture(buttonName .. "Icon", "BORDER")
+        button.icon:SetAllPoints(button)
     end
     
-    if ActionButton_UpdateHotkeys then
-        ActionButton_UpdateHotkeys(button, TUI:GetConfig("actionBars", "showHotkeys"))
+    -- Set up the cooldown frame (required for ActionButton functions)
+    if not button.cooldown then
+        button.cooldown = CreateFrame("Cooldown", buttonName .. "Cooldown", button, "CooldownFrameTemplate")
+        button.cooldown:SetAllPoints(button)
     end
     
-    -- Store reference
+    -- Set up count text (required for stack counting)
+    if not button.count then
+        button.count = button:CreateFontString(buttonName .. "Count", "OVERLAY", "NumberFontNormal")
+        button.count:SetPoint("BOTTOMRIGHT", button, -2, 2)
+    end
+    
+    -- Set up hotkey text
+    if not button.hotkey then
+        button.hotkey = button:CreateFontString(buttonName .. "HotKey", "OVERLAY", "NumberFontNormalSmall")
+        button.hotkey:SetPoint("TOPLEFT", button, 2, -2)
+    end
+    
+    -- Store reference early
     self.buttons[actionSlot] = button
     
+    -- Delay ActionButton function calls to let the template fully initialize
+    local function delayedInit()
+        -- Initialize the button properly after a short delay
+        -- Use pcall for extra safety in case ActionButton functions have internal errors
+        if ActionButton_Update then
+            local success, err = pcall(ActionButton_Update, button)
+            if not success then
+                DEFAULT_CHAT_FRAME:AddMessage("TUI: ActionButton_Update failed: " .. (err or "unknown error"))
+            end
+        end
+        
+        if ActionButton_UpdateHotkeys then
+            local success, err = pcall(ActionButton_UpdateHotkeys, button, TUI:GetConfig("actionBars", "showHotkeys"))
+            if not success then
+                DEFAULT_CHAT_FRAME:AddMessage("TUI: ActionButton_UpdateHotkeys failed: " .. (err or "unknown error"))
+            end
+        end
+    end
+    
+    -- Schedule delayed initialization
+    local timer = CreateFrame("Frame")
+    timer.timeLeft = 0.1
+    timer:SetScript("OnUpdate", function()
+        timer.timeLeft = timer.timeLeft - arg1
+        if timer.timeLeft <= 0 then
+            delayedInit()
+            timer:SetScript("OnUpdate", nil)
+        end
+    end)
+
     -- Register events with defensive event handling
     button:RegisterEvent("ACTIONBAR_SLOT_CHANGED")
     button:RegisterEvent("PLAYER_AURAS_CHANGED")
@@ -101,14 +155,23 @@ function TUI.ActionBars:CreateActionButton(parent, actionSlot, buttonIndex)
         
         if event == "ACTIONBAR_SLOT_CHANGED" and arg1 == buttonRef:GetID() then
             if ActionButton_Update then
-                ActionButton_Update(buttonRef)
+                local success, err = pcall(ActionButton_Update, buttonRef)
+                if not success then
+                    DEFAULT_CHAT_FRAME:AddMessage("TUI: ActionButton_Update event failed: " .. (err or "unknown error"))
+                end
             end
         elseif event == "PLAYER_AURAS_CHANGED" or event == "ACTIONBAR_UPDATE_COOLDOWN" then
             if ActionButton_UpdateUsable then
-                ActionButton_UpdateUsable(buttonRef)
+                local success, err = pcall(ActionButton_UpdateUsable, buttonRef)
+                if not success then
+                    DEFAULT_CHAT_FRAME:AddMessage("TUI: ActionButton_UpdateUsable failed: " .. (err or "unknown error"))
+                end
             end
             if ActionButton_UpdateCooldown then
-                ActionButton_UpdateCooldown(buttonRef)
+                local success, err = pcall(ActionButton_UpdateCooldown, buttonRef)
+                if not success then
+                    DEFAULT_CHAT_FRAME:AddMessage("TUI: ActionButton_UpdateCooldown failed: " .. (err or "unknown error"))
+                end
             end
         end
     end)
