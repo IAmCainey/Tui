@@ -132,6 +132,10 @@ For issues or questions:
 
 ## Version History
 
+### 1.0.3
+- Fixed missing GroupFrames.lua in TOC file loading order
+- PartyFrames.lua and RaidFrames.lua now properly load after base GroupFrames module
+
 ### 1.0.2
 - Fixed varargs syntax compatibility issue for WoW 1.12.1
 - Changed `function TUI:OnEvent(event, ...)` to `function TUI:OnEvent(event, arg1)` for better 1.12.1 compatibility
