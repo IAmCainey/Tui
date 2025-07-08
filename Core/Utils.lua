@@ -130,6 +130,15 @@ end
 
 -- Fade frame in/out
 function TUI.Utils:FadeFrame(frame, alpha, duration)
+    if not frame then return end
+    
+    -- Check if UIFrameFade exists (should be available in 1.12.1)
+    if not UIFrameFade then
+        -- Fallback to direct alpha setting
+        frame:SetAlpha(alpha)
+        return
+    end
+    
     if not frame.fadeInfo then
         frame.fadeInfo = {}
     end

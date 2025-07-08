@@ -132,6 +132,13 @@ For issues or questions:
 
 ## Version History
 
+### 1.0.5
+- Fixed WoW 1.12.1 compatibility issues in Core.lua
+- Replaced non-existent `MicroButtonFrame` with individual micro button hiding
+- Added defensive checks for all Blizzard UI frame references
+- Added fallback for `UIFrameFade` function in Utils.lua
+- Improved error handling for missing UI elements
+
 ### 1.0.4
 - Fixed remaining TuiUI references in GroupFrames.lua and RaidFrames.lua
 - Changed `TuiUI.GroupFrames` to `TUI.GroupFrames` in function definitions

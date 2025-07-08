@@ -6,15 +6,34 @@ TUI.Core = {}
 -- Hide default Blizzard UI elements
 function TUI:HideBlizzardUI()
     -- Hide main action bars
-    MainMenuBar:Hide()
-    MainMenuBar:UnregisterAllEvents()
+    if MainMenuBar then
+        MainMenuBar:Hide()
+        MainMenuBar:UnregisterAllEvents()
+    end
     
-    -- Hide micro menu
-    MicroButtonFrame:Hide()
-    MicroButtonFrame:UnregisterAllEvents()
+    -- Hide micro menu (individual buttons in 1.12.1)
+    local microButtons = {
+        "CharacterMicroButton",
+        "SpellbookMicroButton", 
+        "TalentMicroButton",
+        "QuestLogMicroButton",
+        "SocialsMicroButton",
+        "WorldMapMicroButton",
+        "MainMenuMicroButton",
+        "HelpMicroButton"
+    }
+    
+    for _, buttonName in ipairs(microButtons) do
+        local button = getglobal(buttonName)
+        if button then
+            button:Hide()
+        end
+    end
     
     -- Hide bag bar
-    MainMenuBarBackpackButton:Hide()
+    if MainMenuBarBackpackButton then
+        MainMenuBarBackpackButton:Hide()
+    end
     for i = 0, 3 do
         local bagButton = getglobal("CharacterBag" .. i .. "Slot")
         if bagButton then
@@ -23,11 +42,15 @@ function TUI:HideBlizzardUI()
     end
     
     -- Hide default unit frames
-    PlayerFrame:Hide()
-    PlayerFrame:UnregisterAllEvents()
+    if PlayerFrame then
+        PlayerFrame:Hide()
+        PlayerFrame:UnregisterAllEvents()
+    end
     
-    TargetFrame:Hide()
-    TargetFrame:UnregisterAllEvents()
+    if TargetFrame then
+        TargetFrame:Hide()
+        TargetFrame:UnregisterAllEvents()
+    end
     
     -- Hide party frames
     for i = 1, 4 do
@@ -38,7 +61,7 @@ function TUI:HideBlizzardUI()
         end
     end
     
-    -- Hide other UI elements
+    -- Hide other UI elements (check if they exist first)
     if MainMenuExpBar then
         MainMenuExpBar:Hide()
     end
@@ -47,7 +70,7 @@ function TUI:HideBlizzardUI()
         ReputationWatchStatusBar:Hide()
     end
     
-    -- Hide castbar
+    -- Hide castbar (may not exist in 1.12.1)
     if CastingBarFrame then
         CastingBarFrame:Hide()
         CastingBarFrame:UnregisterAllEvents()
