@@ -77,8 +77,11 @@ function TUI.ActionBars:CreateActionButton(parent, actionSlot, buttonIndex)
     local buttonName = "TUI_ActionButton" .. actionSlot
     
     -- Try to create button with ActionButtonTemplate, fallback to basic button if template fails
-    local button = CreateFrame("CheckButton", buttonName, parent, "ActionButtonTemplate")
-    if not button then
+    local button = nil
+    local success, templateButton = pcall(CreateFrame, "CheckButton", buttonName, parent, "ActionButtonTemplate")
+    if success and templateButton then
+        button = templateButton
+    else
         -- Fallback: create basic button if ActionButtonTemplate doesn't work
         DEFAULT_CHAT_FRAME:AddMessage("TUI: ActionButtonTemplate failed, creating basic button")
         button = CreateFrame("CheckButton", buttonName, parent)
@@ -97,30 +100,44 @@ function TUI.ActionBars:CreateActionButton(parent, actionSlot, buttonIndex)
     
     -- Set up the button icon texture (required for ActionButton functions)
     if not button.icon then
-        button.icon = button:CreateTexture(buttonName .. "Icon", "BORDER")
-        button.icon:SetAllPoints(button)
+        -- Try to get the icon from the template first
+        local templateIcon = getglobal(buttonName .. "Icon")
+        if templateIcon then
+            button.icon = templateIcon
+        else
+            -- Create manually if template didn't create it
+            button.icon = button:CreateTexture(buttonName .. "Icon", "BORDER")
+            button.icon:SetAllPoints(button)
+        end
     end
     
-    -- Set up the cooldown frame (required for ActionButton functions)
-    if not button.cooldown then
-        -- In WoW 1.12.1, cooldown frames don't use templates
-        button.cooldown = CreateFrame("Cooldown", buttonName .. "Cooldown", button)
-        button.cooldown:SetAllPoints(button)
-        -- Set up cooldown properties for 1.12.1
-        button.cooldown:SetDrawEdge(false)
-        button.cooldown:SetDrawSwipe(true)
-    end
+    -- Don't manually create cooldown frames - let ActionButtonTemplate handle it
+    -- In WoW 1.12.1, the template creates all necessary child frames including cooldown
     
     -- Set up count text (required for stack counting)
     if not button.count then
-        button.count = button:CreateFontString(buttonName .. "Count", "OVERLAY", "NumberFontNormal")
-        button.count:SetPoint("BOTTOMRIGHT", button, -2, 2)
+        -- Try to get the count from the template first
+        local templateCount = getglobal(buttonName .. "Count")
+        if templateCount then
+            button.count = templateCount
+        else
+            -- Create manually if template didn't create it
+            button.count = button:CreateFontString(buttonName .. "Count", "OVERLAY", "NumberFontNormal")
+            button.count:SetPoint("BOTTOMRIGHT", button, -2, 2)
+        end
     end
     
     -- Set up hotkey text
     if not button.hotkey then
-        button.hotkey = button:CreateFontString(buttonName .. "HotKey", "OVERLAY", "NumberFontNormalSmall")
-        button.hotkey:SetPoint("TOPLEFT", button, 2, -2)
+        -- Try to get the hotkey from the template first
+        local templateHotkey = getglobal(buttonName .. "HotKey")
+        if templateHotkey then
+            button.hotkey = templateHotkey
+        else
+            -- Create manually if template didn't create it
+            button.hotkey = button:CreateFontString(buttonName .. "HotKey", "OVERLAY", "NumberFontNormalSmall")
+            button.hotkey:SetPoint("TOPLEFT", button, 2, -2)
+        end
     end
     
     -- Store reference early

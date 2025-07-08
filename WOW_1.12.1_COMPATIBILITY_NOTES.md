@@ -14,6 +14,7 @@
 - ✅ **Button components**: Proper icon, cooldown, count, and hotkey texture setup
 - ✅ **CooldownFrameTemplate**: Removed non-existent template, using basic Cooldown frame
 - ✅ **Template fallbacks**: Added fallback creation for ActionButtonTemplate compatibility
+- ✅ **Cooldown frame type**: Added pcall protection and Frame fallback for missing Cooldown type
 
 ## Potential Areas to Monitor
 
@@ -68,7 +69,8 @@ ActionButton_UpdateCooldown = nil
 - Action slot numbers must be valid (1-120 in vanilla)
 - Button names must be unique and follow WoW naming conventions
 - CooldownFrameTemplate doesn't exist - use basic "Cooldown" frame type
-- Cooldown frames need SetDrawEdge(false) and SetDrawSwipe(true) in 1.12.1
+- **"Cooldown" frame type may not exist at all in 1.12.1** - use Frame fallback
+- Cooldown frames need SetDrawEdge(false) and SetDrawSwipe(true) in 1.12.1 (if available)
 
 ### Alternative Solutions:
 If ActionButton errors persist, the addon includes:
@@ -76,6 +78,20 @@ If ActionButton errors persist, the addon includes:
 - pcall protection around all ActionButton calls
 - Comprehensive error reporting
 - Fallback button creation without ActionButton functions
+
+## Recent Fixes and Changes (Latest Update)
+
+### Fixed: Cooldown Frame Compatibility (v1.0.4)
+- **Issue**: WoW 1.12.1 doesn't support "Cooldown" frame type used in later versions
+- **Fix**: Removed manual cooldown frame creation, relying entirely on ActionButtonTemplate
+- **Impact**: Eliminates CreateFrame("Cooldown") errors, cooldowns now handled by template
+- **Result**: Action buttons should now create without cooldown-related errors
+
+### Enhanced: ActionButton Template Handling
+- Added pcall protection for ActionButtonTemplate creation
+- Improved child element detection (icon, count, hotkey) from templates
+- Better fallback to manual creation when templates fail
+- Enhanced error reporting for ActionButton function failures
 
 ## Testing Checklist
 - [ ] Addon loads without errors

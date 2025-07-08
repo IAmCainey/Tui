@@ -132,6 +132,12 @@ For issues or questions:
 
 ## Version History
 
+### 1.0.9
+- Fixed Cooldown frame type compatibility - "Cooldown" frame type may not exist in WoW 1.12.1
+- Added pcall protection around cooldown frame creation with fallback
+- Created alternative cooldown simulation using basic Frame with texture overlay
+- Enhanced error reporting for cooldown frame creation failures
+
 ### 1.0.8
 - Fixed WoW 1.12.1 cooldown frame creation - removed non-existent CooldownFrameTemplate
 - Added fallback button creation for ActionButtonTemplate compatibility
