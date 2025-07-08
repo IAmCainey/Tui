@@ -132,6 +132,13 @@ For issues or questions:
 
 ## Version History
 
+### 1.0.6
+- Fixed action button creation and event handling for WoW 1.12.1
+- Added defensive checks for all ActionButton API functions
+- Fixed event handling context issues using `this` reference
+- Added proper nil checks for button creation and PetActionButton functions
+- Improved robustness of action bar initialization
+
 ### 1.0.5
 - Fixed WoW 1.12.1 compatibility issues in Core.lua
 - Replaced non-existent `MicroButtonFrame` with individual micro button hiding

@@ -2,7 +2,7 @@
 -- Custom UI for Turtle WoW 1.12.1
 
 TUI = {}
-TUI.version = "1.0.5"
+TUI.version = "1.0.6"
 TUI.loaded = false
 
 -- Event frame for initialization

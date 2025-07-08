@@ -69,29 +69,47 @@ end
 -- Create action button
 function TUI.ActionBars:CreateActionButton(parent, actionSlot, buttonIndex)
     local button = CreateFrame("CheckButton", "TUI_ActionButton" .. actionSlot, parent, "ActionButtonTemplate")
+    if not button then return nil end
+    
     button:SetID(actionSlot)
     button:SetWidth(36)
     button:SetHeight(36)
     
-    -- Set up the button
+    -- Set up the button properties required for 1.12.1
     button.showgrid = 1
-    ActionButton_Update(button)
-    ActionButton_UpdateHotkeys(button, TUI:GetConfig("actionBars", "showHotkeys"))
+    
+    -- Initialize the button properly before calling ActionButton functions
+    if ActionButton_Update then
+        ActionButton_Update(button)
+    end
+    
+    if ActionButton_UpdateHotkeys then
+        ActionButton_UpdateHotkeys(button, TUI:GetConfig("actionBars", "showHotkeys"))
+    end
     
     -- Store reference
     self.buttons[actionSlot] = button
     
-    -- Register events
+    -- Register events with defensive event handling
     button:RegisterEvent("ACTIONBAR_SLOT_CHANGED")
     button:RegisterEvent("PLAYER_AURAS_CHANGED")
     button:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN")
     
     button:SetScript("OnEvent", function()
-        if event == "ACTIONBAR_SLOT_CHANGED" and arg1 == this:GetID() then
-            ActionButton_Update(this)
+        local buttonRef = this or button
+        if not buttonRef then return end
+        
+        if event == "ACTIONBAR_SLOT_CHANGED" and arg1 == buttonRef:GetID() then
+            if ActionButton_Update then
+                ActionButton_Update(buttonRef)
+            end
         elseif event == "PLAYER_AURAS_CHANGED" or event == "ACTIONBAR_UPDATE_COOLDOWN" then
-            ActionButton_UpdateUsable(this)
-            ActionButton_UpdateCooldown(this)
+            if ActionButton_UpdateUsable then
+                ActionButton_UpdateUsable(buttonRef)
+            end
+            if ActionButton_UpdateCooldown then
+                ActionButton_UpdateCooldown(buttonRef)
+            end
         end
     end)
     
@@ -113,13 +131,17 @@ function TUI.ActionBars:CreatePetBar()
     -- Create pet buttons
     for i = 1, 10 do
         local button = CreateFrame("CheckButton", "TUI_PetActionButton" .. i, frame, "PetActionButtonTemplate")
-        button:SetID(i)
-        button:SetWidth(36)
-        button:SetHeight(36)
-        button:SetPoint("LEFT", frame, "LEFT", (i - 1) * 40, 0)
-        
-        -- Set up the button
-        PetActionButton_Set(button)
+        if button then
+            button:SetID(i)
+            button:SetWidth(36)
+            button:SetHeight(36)
+            button:SetPoint("LEFT", frame, "LEFT", (i - 1) * 40, 0)
+            
+            -- Set up the button with defensive check
+            if PetActionButton_Set then
+                PetActionButton_Set(button)
+            end
+        end
     end
     
     self.bars.petBar = frame
@@ -182,7 +204,7 @@ function TUI.ActionBars:UpdateAll()
     
     -- Update button settings
     for _, button in pairs(self.buttons) do
-        if button then
+        if button and ActionButton_UpdateHotkeys then
             ActionButton_UpdateHotkeys(button, TUI:GetConfig("actionBars", "showHotkeys"))
         end
     end
