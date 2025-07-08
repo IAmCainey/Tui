@@ -25,8 +25,10 @@ A complete UI replacement addon for World of Warcraft 1.12.1 (Turtle WoW). This 
 
 ### Core Features
 - Completely replaces default Blizzard UI
-- Drag-and-drop positioning for all frames
-- Persistent settings saved per character
+- **Advanced positioning system**: Drag-and-drop with snap-to-grid
+- **Frame resizing**: Resize action bars and automatically reflow buttons
+- **Lock/unlock system**: Individual or global frame locking
+- **Persistent settings**: All positions and sizes saved per character
 - Modular design for easy customization
 - Optimized for 1.12.1 client
 
@@ -47,13 +49,32 @@ The addon creates saved variables that persist across sessions:
 - **TUIDB**: Global settings
 - **TUICharDB**: Character-specific settings
 
+### Frame Management
+
+#### Moving and Resizing Frames
+- **Unlock frames**: Click the lock button (🔓) in the top-right corner of any frame
+- **Move frames**: Drag the frame by clicking and holding anywhere on it
+- **Resize frames**: Drag the resize handle (📐) in the bottom-right corner
+- **Lock frames**: Click the lock button (🔒) to prevent accidental movement
+
+#### Snap-to-Grid
+All movement and resizing automatically snaps to a 4-pixel grid for perfect alignment.
+
+#### Automatic Button Layout
+When resizing action bars, buttons automatically reflow:
+- Wider bars = more buttons per row
+- Taller bars = more rows
+- Always maintains optimal button spacing
+
+### Slash Commands
+- `/tui` or `/tuiui` - Show help
+- `/tui lock` - Lock all frames globally
+- `/tui unlock` - Unlock all frames globally  
+- `/tui reset` - Reset all frame positions to defaults
+
 ### Default Keybindings
 - All default WoW keybindings remain functional
 - Action bars respond to standard action bar keybinds
-- Frame positioning can be adjusted by dragging while out of combat
-
-### Frame Positioning
-All frames can be repositioned by dragging them around the screen. Positions are automatically saved.
 
 ## File Structure
 

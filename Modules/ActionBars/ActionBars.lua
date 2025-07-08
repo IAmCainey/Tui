@@ -48,19 +48,69 @@ function TUI.ActionBars:CreateBar(barName, startSlot, numButtons)
     if not config or not config.enabled then return end
     
     local frame = CreateFrame("Frame", "TUI_" .. barName, UIParent)
+    
+    -- Set initial size (will be overridden by saved config if it exists)
     frame:SetWidth(numButtons * 36 + (numButtons - 1) * 4)
     frame:SetHeight(36)
     
-    -- Set position
-    TUI.Utils:SetFramePosition(frame, "actionBars", "bars", barName)
+    -- Add layout update function for when frame is resized
+    frame.UpdateLayout = function(self)
+        local buttonSize = 36
+        local spacing = 4
+        local frameWidth = self:GetWidth()
+        local frameHeight = self:GetHeight()
+        
+        -- Calculate buttons per row based on frame width
+        local maxButtonsPerRow = math.floor((frameWidth + spacing) / (buttonSize + spacing))
+        maxButtonsPerRow = math.max(1, math.min(maxButtonsPerRow, numButtons))
+        
+        -- Update button positions
+        local buttonIndex = 0
+        for i = 1, numButtons do
+            local button = self:GetChildren()
+            if button and button:GetID() then
+                local row = math.floor(buttonIndex / maxButtonsPerRow)
+                local col = buttonIndex % maxButtonsPerRow
+                
+                button:ClearAllPoints()
+                button:SetPoint("TOPLEFT", self, "TOPLEFT", 
+                    col * (buttonSize + spacing), 
+                    -row * (buttonSize + spacing))
+                    
+                buttonIndex = buttonIndex + 1
+            end
+        end
+        
+        -- Update stored buttons per row config
+        TUI:SetConfig(maxButtonsPerRow, "actionBars", "bars", barName, "buttonsPerRow")
+    end
     
-    -- Make draggable
-    TUI.Utils:MakeDraggable(frame, "actionBars", "bars", barName)
+    -- Set position and size from config
+    TUI.Utils:SetAdvancedFramePosition(frame, {"actionBars", "bars", barName})
+    
+    -- Make advanced draggable with resize capability
+    TUI.Utils:MakeAdvancedDraggable(frame, {"actionBars", "bars", barName}, {
+        allowResize = true,
+        minWidth = 40,  -- At least 1 button
+        maxWidth = 12 * 40,  -- At most 12 buttons wide
+        minHeight = 36,  -- At least 1 row
+        maxHeight = 5 * 40,  -- At most 5 rows
+        snapToGrid = 4
+    })
     
     -- Create buttons
     for i = 1, numButtons do
         local button = self:CreateActionButton(frame, startSlot + i - 1, i)
-        button:SetPoint("LEFT", frame, "LEFT", (i - 1) * 40, 0)
+        if button then
+            local row = math.floor((i - 1) / (config.buttonsPerRow or 12))
+            local col = (i - 1) % (config.buttonsPerRow or 12)
+            button:SetPoint("TOPLEFT", frame, "TOPLEFT", col * 40, -row * 40)
+        end
+    end
+    
+    -- Initial layout update
+    if frame.UpdateLayout then
+        frame:UpdateLayout()
     end
     
     self.bars[barName] = frame
@@ -214,11 +264,46 @@ function TUI.ActionBars:CreatePetBar()
     frame:SetWidth(10 * 36 + 9 * 4)
     frame:SetHeight(36)
     
-    -- Set position
-    TUI.Utils:SetFramePosition(frame, "actionBars", "bars", "petBar")
+    -- Add layout update function for pet bar
+    frame.UpdateLayout = function(self)
+        local buttonSize = 36
+        local spacing = 4
+        local frameWidth = self:GetWidth()
+        
+        -- Calculate buttons per row based on frame width
+        local maxButtonsPerRow = math.floor((frameWidth + spacing) / (buttonSize + spacing))
+        maxButtonsPerRow = math.max(1, math.min(maxButtonsPerRow, 10))
+        
+        -- Update button positions
+        for i = 1, 10 do
+            local button = getglobal("TUI_PetActionButton" .. i)
+            if button then
+                local row = math.floor((i - 1) / maxButtonsPerRow)
+                local col = (i - 1) % maxButtonsPerRow
+                
+                button:ClearAllPoints()
+                button:SetPoint("TOPLEFT", self, "TOPLEFT", 
+                    col * (buttonSize + spacing), 
+                    -row * (buttonSize + spacing))
+            end
+        end
+        
+        -- Update stored buttons per row config
+        TUI:SetConfig(maxButtonsPerRow, "actionBars", "bars", "petBar", "buttonsPerRow")
+    end
     
-    -- Make draggable
-    TUI.Utils:MakeDraggable(frame, "actionBars", "bars", "petBar")
+    -- Set position and size from config
+    TUI.Utils:SetAdvancedFramePosition(frame, {"actionBars", "bars", "petBar"})
+    
+    -- Make advanced draggable with resize capability
+    TUI.Utils:MakeAdvancedDraggable(frame, {"actionBars", "bars", "petBar"}, {
+        allowResize = true,
+        minWidth = 40,  -- At least 1 button
+        maxWidth = 10 * 40,  -- At most 10 buttons wide
+        minHeight = 36,  -- At least 1 row
+        maxHeight = 5 * 40,  -- At most 5 rows
+        snapToGrid = 4
+    })
     
     -- Create pet buttons
     for i = 1, 10 do
@@ -262,11 +347,46 @@ function TUI.ActionBars:CreateStanceBar()
     frame:SetWidth(10 * 36 + 9 * 4)
     frame:SetHeight(36)
     
-    -- Set position
-    TUI.Utils:SetFramePosition(frame, "actionBars", "bars", "stanceBar")
+    -- Add layout update function for stance bar
+    frame.UpdateLayout = function(self)
+        local buttonSize = 36
+        local spacing = 4
+        local frameWidth = self:GetWidth()
+        
+        -- Calculate buttons per row based on frame width
+        local maxButtonsPerRow = math.floor((frameWidth + spacing) / (buttonSize + spacing))
+        maxButtonsPerRow = math.max(1, math.min(maxButtonsPerRow, 10))
+        
+        -- Update button positions
+        for i = 1, 10 do
+            local button = getglobal("TUI_StanceButton" .. i)
+            if button then
+                local row = math.floor((i - 1) / maxButtonsPerRow)
+                local col = (i - 1) % maxButtonsPerRow
+                
+                button:ClearAllPoints()
+                button:SetPoint("TOPLEFT", self, "TOPLEFT", 
+                    col * (buttonSize + spacing), 
+                    -row * (buttonSize + spacing))
+            end
+        end
+        
+        -- Update stored buttons per row config
+        TUI:SetConfig(maxButtonsPerRow, "actionBars", "bars", "stanceBar", "buttonsPerRow")
+    end
     
-    -- Make draggable
-    TUI.Utils:MakeDraggable(frame, "actionBars", "bars", "stanceBar")
+    -- Set position and size from config
+    TUI.Utils:SetAdvancedFramePosition(frame, {"actionBars", "bars", "stanceBar"})
+    
+    -- Make advanced draggable with resize capability
+    TUI.Utils:MakeAdvancedDraggable(frame, {"actionBars", "bars", "stanceBar"}, {
+        allowResize = true,
+        minWidth = 40,  -- At least 1 button
+        maxWidth = 10 * 40,  -- At most 10 buttons wide
+        minHeight = 36,  -- At least 1 row
+        maxHeight = 5 * 40,  -- At most 5 rows
+        snapToGrid = 4
+    })
     
     -- Create stance buttons
     for i = 1, 10 do

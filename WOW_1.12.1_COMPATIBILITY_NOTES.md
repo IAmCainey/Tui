@@ -1,5 +1,14 @@
 # WoW 1.12.1 Compatibility Notes
 
+## New Features (v1.1.0)
+- ✅ **Enhanced frame positioning**: Advanced drag-and-drop with snap-to-grid
+- ✅ **Frame resizing**: Action bars can be resized with automatic button reflow
+- ✅ **Individual lock controls**: Each frame has its own lock/unlock button
+- ✅ **Global lock system**: Lock/unlock all frames with slash commands
+- ✅ **Improved saved variables**: Position, size, and lock state persistence
+- ✅ **Reset functionality**: Reset individual or all frames to defaults
+- ✅ **Visual feedback**: Resize handles and borders when frames are unlocked
+
 ## Fixed Issues
 - ✅ **MicroButtonFrame**: Replaced with individual micro button hiding
 - ✅ **Defensive frame checks**: Added nil checks for all Blizzard UI frames

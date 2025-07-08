@@ -14,12 +14,12 @@ local defaults = {
             showMacroNames = true,
             fadeOutOfCombat = false,
             bars = {
-                bar1 = { enabled = true, x = 0, y = 0, buttonsPerRow = 12 },
-                bar2 = { enabled = true, x = 0, y = -40, buttonsPerRow = 12 },
-                bar3 = { enabled = false, x = 0, y = -80, buttonsPerRow = 12 },
-                bar4 = { enabled = false, x = 0, y = -120, buttonsPerRow = 12 },
-                petBar = { enabled = true, x = 0, y = 40, buttonsPerRow = 10 },
-                stanceBar = { enabled = true, x = -400, y = 0, buttonsPerRow = 10 }
+                bar1 = { enabled = true, x = 0, y = -200, width = 480, height = 36, buttonsPerRow = 12, locked = false },
+                bar2 = { enabled = true, x = 0, y = -240, width = 480, height = 36, buttonsPerRow = 12, locked = false },
+                bar3 = { enabled = false, x = 0, y = -280, width = 480, height = 36, buttonsPerRow = 12, locked = false },
+                bar4 = { enabled = false, x = 0, y = -320, width = 480, height = 36, buttonsPerRow = 12, locked = false },
+                petBar = { enabled = true, x = 0, y = -160, width = 400, height = 36, buttonsPerRow = 10, locked = false },
+                stanceBar = { enabled = true, x = -400, y = -200, width = 400, height = 36, buttonsPerRow = 10, locked = false }
             }
         },
         unitFrames = {
