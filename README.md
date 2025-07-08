@@ -132,6 +132,10 @@ For issues or questions:
 
 ## Version History
 
+### 1.0.2
+- Fixed varargs syntax compatibility issue for WoW 1.12.1
+- Changed `function TUI:OnEvent(event, ...)` to `function TUI:OnEvent(event, arg1)` for better 1.12.1 compatibility
+
 ### 1.0.1
 - Fixed initialization order bug that caused "attempt to index global TUI (a nil value)" error
 - Updated TOC file to load TUI.lua before Core modules

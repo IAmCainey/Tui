@@ -2,7 +2,7 @@
 -- Custom UI for Turtle WoW 1.12.1
 
 TUI = {}
-TUI.version = "1.0.1"
+TUI.version = "1.0.2"
 TUI.loaded = false
 
 -- Event frame for initialization
@@ -30,10 +30,9 @@ function TUI:Initialize()
 end
 
 -- Event handler
-function TUI:OnEvent(event, ...)
+function TUI:OnEvent(event, arg1)
     if event == "ADDON_LOADED" then
-        local addonName = ...
-        if addonName == "TUI" then
+        if arg1 == "TUI" then
             self:Initialize()
         end
     elseif event == "PLAYER_LOGIN" then
