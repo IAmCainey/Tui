@@ -173,7 +173,7 @@ function TUI.GroupFrames:UpdateRaidFrames()
 end
 
 -- Update individual raid member frame
-function TuiUI.GroupFrames:UpdateRaidMemberFrame(frame)
+function TUI.GroupFrames:UpdateRaidMemberFrame(frame)
     local unit = frame.unit
     if not UnitExists(unit) then return end
     

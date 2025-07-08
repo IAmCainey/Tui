@@ -132,6 +132,10 @@ For issues or questions:
 
 ## Version History
 
+### 1.0.4
+- Fixed remaining TuiUI references in GroupFrames.lua and RaidFrames.lua
+- Changed `TuiUI.GroupFrames` to `TUI.GroupFrames` in function definitions
+
 ### 1.0.3
 - Fixed missing GroupFrames.lua in TOC file loading order
 - PartyFrames.lua and RaidFrames.lua now properly load after base GroupFrames module

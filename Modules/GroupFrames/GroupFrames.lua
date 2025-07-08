@@ -26,7 +26,7 @@ function TUI.GroupFrames:UpdateAll()
 end
 
 -- Update group frame visibility based on group type
-function TuiUI.GroupFrames:UpdateGroupVisibility()
+function TUI.GroupFrames:UpdateGroupVisibility()
     local numRaidMembers = GetNumRaidMembers()
     local numPartyMembers = GetNumPartyMembers()
     
