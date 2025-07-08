@@ -1,0 +1,24 @@
+## Interface: 11200
+## Title: TUI
+## Notes: Custom UI replacement for Turtle WoW 1.12.1
+## Version: 1.0.0
+## Author: YourName
+## SavedVariables: TUIDB
+## SavedVariablesPerCharacter: TUICharDB
+
+# Core files
+Core\Core.lua
+Core\Database.lua
+Core\Utils.lua
+
+# Modules
+Modules\ActionBars\ActionBars.lua
+Modules\UnitFrames\UnitFrames.lua
+Modules\UnitFrames\PlayerFrame.lua
+Modules\UnitFrames\TargetFrame.lua
+Modules\UnitFrames\TargetTargetFrame.lua
+Modules\GroupFrames\PartyFrames.lua
+Modules\GroupFrames\RaidFrames.lua
+
+# Main initialization
+TUI.lua
