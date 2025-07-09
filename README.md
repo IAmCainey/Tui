@@ -1,6 +1,22 @@
 # TUI - World of Warcraft Custom UI for Turtle WoW 1.12.1
 
-A complete UI replacement addon for World of Warcraft 1.12.1 (Turtle WoW). This addon disables the default Blizzard UI and provides custom action bars, unit frames, and group frames.
+A complete UI replacement addon for World of Warcraft 1.12.1 (Turtle WoW). This addon disables## Version History
+
+### 1.1.6
+- CRITICAL FIX: Fixed corrupted CONFIG_EXAMPLES.lua file with malformed syntax
+- Enhanced error handling with defensive function existence checks in TUI:Initialize()
+- Fixed array iteration using ipairs() instead of pairs() for better WoW 1.12.1 compatibility  
+- Added comprehensive function availability checks before calling module initialization
+- Cleaned up orphaned TuiUI.lua and test files
+- All files now pass comprehensive syntax validation
+
+### 1.1.5
+- Fixed WoW 1.12.1 Lua compatibility issues with array iteration
+- Changed pairs() to ipairs() for numerically indexed arrays in Utils.lua
+- Added defensive checks for function existence in ActionBars initialization
+- Enhanced error handling and messaging for missing dependencies
+
+### 1.1.4e default Blizzard UI and provides custom action bars, unit frames, and group frames.
 
 ## Features
 
