@@ -2,7 +2,7 @@
 -- Custom UI for Turtle WoW 1.12.1
 
 TUI = {}
-TUI.version = "1.1.1"
+TUI.version = "1.1.2"
 TUI.loaded = false
 
 -- Event frame for initialization
@@ -81,8 +81,8 @@ function TUI:RefreshUI()
                     if frame.lockButton then
                         -- Trigger lock state update without actually clicking
                         if frame.isLocked then
-                            frame.lockButton.icon:SetTexture("Interface\\Buttons\\LockButton-Locked-Up")
-                            frame.lockButton:SetAlpha(0.3)
+                            frame.lockButton.icon:SetTexture(1, 0, 0, 0.8) -- Red for locked
+                            frame.lockButton:SetAlpha(0.7)
                             frame:SetMovable(false)
                             frame:EnableMouse(false)
                             if frame.resizeHandle then
@@ -92,7 +92,7 @@ function TUI:RefreshUI()
                                 frame.border:Hide()
                             end
                         else
-                            frame.lockButton.icon:SetTexture("Interface\\Buttons\\LockButton-Border")
+                            frame.lockButton.icon:SetTexture(1, 1, 1, 0.8) -- White for unlocked
                             frame.lockButton:SetAlpha(1.0)
                             frame:SetMovable(true)
                             frame:EnableMouse(true)
@@ -139,7 +139,8 @@ function SlashCmdList.TUI(msg)
         DEFAULT_CHAT_FRAME:AddMessage("|cff00ffff/tui unlock|r - Unlock all frames (allow moving/resizing)")
         DEFAULT_CHAT_FRAME:AddMessage("|cff00ffff/tui reset|r - Reset all frame positions to defaults")
         DEFAULT_CHAT_FRAME:AddMessage("|cffff8000Note:|r Individual frames can be locked/unlocked using the lock button in their top-right corner")
-        DEFAULT_CHAT_FRAME:AddMessage("|cffff8000Note:|r Drag frames to move them, drag the bottom-right corner to resize")
+        DEFAULT_CHAT_FRAME:AddMessage("|cffff8000Note:|r Drag frames to move them, click the bottom-right corner to cycle resize")
+        DEFAULT_CHAT_FRAME:AddMessage("|cffff8000Lock indicators:|r Red = Locked, White = Unlocked")
     else
         DEFAULT_CHAT_FRAME:AddMessage("|cffff0000TUI:|r Unknown command '" .. command .. "'. Type /tui for help.")
     end

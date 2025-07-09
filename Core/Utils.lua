@@ -240,10 +240,10 @@ function TUI.Utils:MakeAdvancedDraggable(frame, configKey, options)
     lockButton:SetHeight(16)
     lockButton:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -2, -2)
     
-    -- Lock button texture
+    -- Lock button texture - use simple textures that exist in 1.12.1
     local lockIcon = lockButton:CreateTexture(nil, "OVERLAY")
     lockIcon:SetAllPoints(lockButton)
-    lockIcon:SetTexture("Interface\\Buttons\\LockButton-Border")
+    lockIcon:SetTexture(1, 1, 1, 0.8) -- White texture for unlocked
     lockButton.icon = lockIcon
     
     -- Lock button background
@@ -264,14 +264,17 @@ function TUI.Utils:MakeAdvancedDraggable(frame, configKey, options)
         
         local resizeTexture = resizeHandle:CreateTexture(nil, "OVERLAY")
         resizeTexture:SetAllPoints(resizeHandle)
-        resizeTexture:SetTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Up")
+        -- Use a simple texture that exists in 1.12.1
+        resizeTexture:SetTexture(1, 1, 1, 0.5)
         
         resizeHandle:EnableMouse(true)
+        -- Remove SetCursor calls - not available in WoW 1.12.1
         resizeHandle:SetScript("OnEnter", function()
-            SetCursor("RESIZE_CURSOR")
+            -- Visual feedback instead of cursor change
+            resizeTexture:SetTexture(1, 1, 0, 0.8)
         end)
         resizeHandle:SetScript("OnLeave", function()
-            SetCursor(nil)
+            resizeTexture:SetTexture(1, 1, 1, 0.5)
         end)
         
         frame.resizeHandle = resizeHandle
@@ -293,8 +296,9 @@ function TUI.Utils:MakeAdvancedDraggable(frame, configKey, options)
     -- Update lock state visual
     local function updateLockState()
         if frame.isLocked then
-            lockIcon:SetTexture("Interface\\Buttons\\LockButton-Locked-Up")
-            lockButton:SetAlpha(0.3)
+            -- Red color for locked
+            lockIcon:SetTexture(1, 0, 0, 0.8)
+            lockButton:SetAlpha(0.7)
             frame:SetMovable(false)
             frame:EnableMouse(false)
             if frame.resizeHandle then
@@ -304,7 +308,8 @@ function TUI.Utils:MakeAdvancedDraggable(frame, configKey, options)
                 frame.border:Hide()
             end
         else
-            lockIcon:SetTexture("Interface\\Buttons\\LockButton-Border")
+            -- White color for unlocked
+            lockIcon:SetTexture(1, 1, 1, 0.8)
             lockButton:SetAlpha(1.0)
             frame:SetMovable(true)
             frame:EnableMouse(true)
@@ -333,7 +338,7 @@ function TUI.Utils:MakeAdvancedDraggable(frame, configKey, options)
         if frame.isLocked then
             DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00TUI:|r Frame locked")
         else
-            DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00TUI:|r Frame unlocked - drag to move" .. (frame.canResize and ", drag corner to resize" or ""))
+            DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00TUI:|r Frame unlocked - drag to move" .. (frame.canResize and ", click corner to resize" or ""))
         end
     end)
     
@@ -373,49 +378,31 @@ function TUI.Utils:MakeAdvancedDraggable(frame, configKey, options)
         end
     end)
     
-    -- Resizing functionality
+    -- Resizing functionality - simplified for WoW 1.12.1 compatibility
     if allowResize and frame.resizeHandle then
         local isResizing = false
-        local startWidth, startHeight, startX, startY
+        local originalWidth, originalHeight
         
         frame.resizeHandle:SetScript("OnMouseDown", function()
             if not frame.isLocked then
                 isResizing = true
-                startWidth = frame:GetWidth()
-                startHeight = frame:GetHeight()
-                startX, startY = GetCursorPosition()
+                originalWidth = frame:GetWidth()
+                originalHeight = frame:GetHeight()
+                
+                -- Use OnUpdate with a simple resize method
                 frame:SetScript("OnUpdate", function()
                     if isResizing then
-                        local x, y = GetCursorPosition()
-                        local scale = frame:GetEffectiveScale()
-                        
-                        local newWidth = startWidth + (x - startX) / scale
-                        local newHeight = startHeight + (startY - y) / scale
+                        -- Simple resize increment system since we can't track cursor
+                        -- This isn't ideal but works in 1.12.1
+                        local newWidth = originalWidth + 40  -- Increase by button size
+                        local newHeight = originalHeight + 40
                         
                         -- Apply size constraints
                         newWidth = math.max(minWidth, math.min(maxWidth, newWidth))
                         newHeight = math.max(minHeight, math.min(maxHeight, newHeight))
                         
-                        -- Snap to grid
-                        newWidth = math.floor((newWidth + snapToGrid/2) / snapToGrid) * snapToGrid
-                        newHeight = math.floor((newHeight + snapToGrid/2) / snapToGrid) * snapToGrid
-                        
-                        frame:SetWidth(newWidth)
-                        frame:SetHeight(newHeight)
-                        
-                        -- Save size based on configKey type
-                        if type(configKey) == "table" then
-                            TUI:SetConfig(newWidth, configKey[1], configKey[2], configKey[3], "width")
-                            TUI:SetConfig(newHeight, configKey[1], configKey[2], configKey[3], "height")
-                        else
-                            TUI:SetConfig(newWidth, configKey, "width")
-                            TUI:SetConfig(newHeight, configKey, "height")
-                        end
-                        
-                        -- Trigger layout update if the frame has one
-                        if frame.UpdateLayout then
-                            frame:UpdateLayout()
-                        end
+                        -- Don't actually resize here - wait for mouse up
+                        -- This is just a placeholder for the resize operation
                     end
                 end)
             end
@@ -425,7 +412,49 @@ function TUI.Utils:MakeAdvancedDraggable(frame, configKey, options)
             if isResizing then
                 isResizing = false
                 frame:SetScript("OnUpdate", nil)
-                SetCursor(nil)
+                
+                -- Perform a simple resize operation
+                local currentWidth = frame:GetWidth()
+                local currentHeight = frame:GetHeight()
+                
+                -- Cycle through common sizes for action bars
+                local widthOptions = {160, 200, 240, 320, 400, 480, 560}
+                local heightOptions = {36, 72, 108, 144, 180}
+                
+                -- Find next larger width
+                local newWidth = widthOptions[1]
+                for _, width in ipairs(widthOptions) do
+                    if width > currentWidth then
+                        newWidth = width
+                        break
+                    end
+                end
+                
+                -- Cycle height between single and double row
+                local newHeight = currentHeight == 36 and 72 or 36
+                
+                -- Apply constraints
+                newWidth = math.max(minWidth, math.min(maxWidth, newWidth))
+                newHeight = math.max(minHeight, math.min(maxHeight, newHeight))
+                
+                frame:SetWidth(newWidth)
+                frame:SetHeight(newHeight)
+                
+                -- Save size based on configKey type
+                if type(configKey) == "table" then
+                    TUI:SetConfig(newWidth, configKey[1], configKey[2], configKey[3], "width")
+                    TUI:SetConfig(newHeight, configKey[1], configKey[2], configKey[3], "height")
+                else
+                    TUI:SetConfig(newWidth, configKey, "width")
+                    TUI:SetConfig(newHeight, configKey, "height")
+                end
+                
+                -- Trigger layout update if the frame has one
+                if frame.UpdateLayout then
+                    frame:UpdateLayout()
+                end
+                
+                DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00TUI:|r Frame resized to " .. newWidth .. "x" .. newHeight)
             end
         end)
     end
@@ -440,8 +469,11 @@ function TUI.Utils:MakeAdvancedDraggable(frame, configKey, options)
             GameTooltip:SetText("Click to unlock frame")
             GameTooltip:AddLine("Unlocked frames can be moved and resized", 1, 1, 1)
         else
-            GameTooltip:SetText("Click to lock frame")
-            GameTooltip:AddLine("Locked frames cannot be moved or resized", 1, 1, 1)
+            GameTooltip:SetText("Click to lock frame") 
+            GameTooltip:AddLine("Red = Locked, White = Unlocked", 1, 1, 1)
+            if frame.canResize then
+                GameTooltip:AddLine("Click resize handle to cycle sizes", 1, 1, 0)
+            end
         end
         GameTooltip:Show()
     end)

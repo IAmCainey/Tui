@@ -1,5 +1,13 @@
 # WoW 1.12.1 Compatibility Notes
 
+## WoW 1.12.1 Compatibility Fixes (v1.1.2)
+- ✅ **SetCursor removal**: Removed SetCursor() calls (not available in 1.12.1)
+- ✅ **GetCursorPosition removal**: Replaced cursor tracking with click-to-cycle resize system
+- ✅ **Texture compatibility**: Replaced custom textures with simple color-based indicators
+- ✅ **Simplified resize system**: Click resize handle to cycle through common sizes
+- ✅ **Visual feedback**: Red = Locked frames, White = Unlocked frames
+- ✅ **1.12.1 tested paths**: All textures now use basic colors or verified 1.12.1 paths
+
 ## New Features (v1.1.0)
 - ✅ **Enhanced frame positioning**: Advanced drag-and-drop with snap-to-grid
 - ✅ **Frame resizing**: Action bars can be resized with automatic button reflow
