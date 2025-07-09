@@ -10,8 +10,12 @@ SlashCmdList["TUICONFIG"] = function(msg)
     if command == "reset" then
         TUI:ResetConfig()
         DEFAULT_CHAT_FRAME:AddMessage("TUI: Configuration reset to defaults")
-    elseif string.match(command, "^scale") then
-        local scale = tonumber(string.match(msg, "scale%s+([%d%.]+)"))
+    elseif string.find(command, "^scale") then
+        -- Use string.find and string.sub for WoW 1.12 Lua 5.0 compatibility
+        local start, finish = string.find(msg, "scale%s+([%d%.]+)")
+        local scaleStr = start and string.sub(msg, start + 6) or nil
+        scaleStr = scaleStr and string.gsub(scaleStr, "%s+", "")
+        local scale = scaleStr and tonumber(scaleStr)
         if scale and scale >= 0.1 and scale <= 3.0 then
             TUI:SetConfig(scale, "actionBars", "scale")
             TUI:SetConfig(scale, "unitFrames", "scale") 

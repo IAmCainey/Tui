@@ -2,6 +2,15 @@
 
 A complete UI replacement addon for World of Warcraft 1.12.1 (Turtle WoW). This addon disables## Version History
 
+### 1.1.7
+- CRITICAL FIX: Enhanced WoW 1.12 vanilla (2006) compatibility
+- Fixed Lua 5.0 compatibility: Replaced `#table` with `table.getn()` for table length
+- Fixed Lua 5.0 compatibility: Replaced `string.match()` with `string.find()` and `string.sub()`
+- Added fallback for `GetEffectiveScale()` method which may not exist in early 1.12 versions
+- Replaced `UnitReactionColor` with manual reaction color table for full vanilla compatibility
+- All code now uses Lua 5.0 syntax and WoW 1.12 original APIs only
+- Verified compatibility with original vanilla WoW client from 2006
+
 ### 1.1.6
 - CRITICAL FIX: Fixed corrupted CONFIG_EXAMPLES.lua file with malformed syntax
 - Enhanced error handling with defensive function existence checks in TUI:Initialize()

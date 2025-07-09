@@ -129,7 +129,19 @@ function TUI.Core:GetUnitColor(unit)
     else
         local reaction = UnitReaction(unit, "player")
         if reaction then
-            local color = UnitReactionColor[reaction]
+            -- Manual reaction colors for WoW 1.12 compatibility
+            local reactionColors = {
+                [1] = {r = 0.8, g = 0.1, b = 0.1}, -- Hostile
+                [2] = {r = 0.8, g = 0.1, b = 0.1}, -- Hostile
+                [3] = {r = 0.8, g = 0.1, b = 0.1}, -- Hostile  
+                [4] = {r = 1.0, g = 1.0, b = 0.0}, -- Neutral
+                [5] = {r = 0.0, g = 1.0, b = 0.0}, -- Friendly
+                [6] = {r = 0.0, g = 1.0, b = 0.0}, -- Friendly
+                [7] = {r = 0.0, g = 1.0, b = 0.0}, -- Friendly
+                [8] = {r = 0.0, g = 1.0, b = 0.0}  -- Friendly
+            }
+            
+            local color = reactionColors[reaction]
             if color then
                 return color.r, color.g, color.b
             end

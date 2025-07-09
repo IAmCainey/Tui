@@ -19,7 +19,13 @@ function TUI.Utils:MakeDraggable(frame, configKey)
         -- Save position if config key provided
         if configKey then
             local x, y = this:GetCenter()
-            local scale = this:GetEffectiveScale()
+            -- GetEffectiveScale fallback for early WoW 1.12 versions
+            local scale = 1
+            if this.GetEffectiveScale then
+                scale = this:GetEffectiveScale()
+            elseif this.GetScale then
+                scale = this:GetScale()
+            end
             x = x * scale
             y = y * scale
             
@@ -355,7 +361,13 @@ function TUI.Utils:MakeAdvancedDraggable(frame, configKey, options)
             
             -- Snap to grid
             local x, y = this:GetCenter()
-            local scale = this:GetEffectiveScale()
+            -- GetEffectiveScale fallback for early WoW 1.12 versions  
+            local scale = 1
+            if this.GetEffectiveScale then
+                scale = this:GetEffectiveScale()
+            elseif this.GetScale then
+                scale = this:GetScale()
+            end
             x = x * scale
             y = y * scale
             
@@ -500,9 +512,9 @@ function TUI.Utils:ToggleAllFrameLocks(locked)
     }
     
     for _, configPath in ipairs(frames) do
-        if #configPath == 3 then
+        if table.getn(configPath) == 3 then
             TUI:SetConfig(locked, configPath[1], configPath[2], configPath[3], "locked")
-        elseif #configPath == 2 then
+        elseif table.getn(configPath) == 2 then
             TUI:SetConfig(locked, configPath[1], configPath[2], "locked")
         end
     end
