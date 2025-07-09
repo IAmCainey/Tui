@@ -7,12 +7,18 @@ TUI.ActionBars.buttons = {}
 
 -- Initialize action bars
 function TUI:InitializeActionBars()
+    DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00TUI:|r Initializing action bars...")
+    
+    -- Check if GetConfig function exists
+    if not self.GetConfig then
+        DEFAULT_CHAT_FRAME:AddMessage("|cffff0000TUI:|r GetConfig function not available - database not initialized")
+        return
+    end
+    
     if not self:GetConfig("actionBars", "enabled") then 
         DEFAULT_CHAT_FRAME:AddMessage("|cffff8000TUI:|r Action bars disabled in config")
         return 
     end
-    
-    DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00TUI:|r Initializing action bars...")
     
     -- Initialize with error handling
     local success, err = pcall(function()

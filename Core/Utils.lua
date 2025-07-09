@@ -499,7 +499,7 @@ function TUI.Utils:ToggleAllFrameLocks(locked)
         {"groupFrames", "raid"}
     }
     
-    for _, configPath in pairs(frames) do
+    for _, configPath in ipairs(frames) do
         if #configPath == 3 then
             TUI:SetConfig(locked, configPath[1], configPath[2], configPath[3], "locked")
         elseif #configPath == 2 then

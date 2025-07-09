@@ -11,16 +11,39 @@ function TUI:Initialize()
     -- Print welcome message
     DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00TUI|r v" .. self.version .. " loaded!")
     
-    -- Initialize database
-    self:InitializeDatabase()
+    -- Initialize database with error handling
+    if self.InitializeDatabase then
+        self:InitializeDatabase()
+    else
+        DEFAULT_CHAT_FRAME:AddMessage("|cffff0000TUI:|r InitializeDatabase function not found!")
+        return
+    end
     
     -- Hide default Blizzard UI elements
-    self:HideBlizzardUI()
+    if self.HideBlizzardUI then
+        self:HideBlizzardUI()
+    else
+        DEFAULT_CHAT_FRAME:AddMessage("|cffff0000TUI:|r HideBlizzardUI function not found!")
+    end
     
-    -- Initialize modules
-    self:InitializeActionBars()
-    self:InitializeUnitFrames()
-    self:InitializeGroupFrames()
+    -- Initialize modules with defensive checks
+    if self.InitializeActionBars then
+        self:InitializeActionBars()
+    else
+        DEFAULT_CHAT_FRAME:AddMessage("|cffff0000TUI:|r InitializeActionBars function not found!")
+    end
+    
+    if self.InitializeUnitFrames then
+        self:InitializeUnitFrames()
+    else
+        DEFAULT_CHAT_FRAME:AddMessage("|cffff0000TUI:|r InitializeUnitFrames function not found!")
+    end
+    
+    if self.InitializeGroupFrames then
+        self:InitializeGroupFrames()
+    else
+        DEFAULT_CHAT_FRAME:AddMessage("|cffff0000TUI:|r InitializeGroupFrames function not found!")
+    end
     
     self.loaded = true
 end

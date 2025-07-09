@@ -153,6 +153,12 @@ For issues or questions:
 
 ## Version History
 
+### 1.1.5
+- Fixed WoW 1.12.1 Lua compatibility: Changed `pairs()` to `ipairs()` for array iteration
+- Added defensive function existence checks in TUI:Initialize() to prevent "nil value" errors
+- Enhanced ActionBars initialization with GetConfig availability check
+- Improved error handling and messaging for missing module functions
+
 ### 1.1.4
 - CRITICAL FIX: Resolved "tui.lua:25: attempt to call method nil value" error
 - Fixed module loading order by creating separate Init.lua for TUI global initialization
