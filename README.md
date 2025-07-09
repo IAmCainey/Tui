@@ -153,6 +153,13 @@ For issues or questions:
 
 ## Version History
 
+### 1.1.4
+- CRITICAL FIX: Resolved "tui.lua:25: attempt to call method nil value" error
+- Fixed module loading order by creating separate Init.lua for TUI global initialization
+- Updated TOC file to load Init.lua first, then Core/Modules, then TUI.lua last
+- This ensures all module functions are defined before TUI:Initialize() calls them
+- Fixed file loading sequence: Init.lua → Core → Modules → TUI.lua
+
 ### 1.0.9
 - Fixed Cooldown frame type compatibility - "Cooldown" frame type may not exist in WoW 1.12.1
 - Added pcall protection around cooldown frame creation with fallback

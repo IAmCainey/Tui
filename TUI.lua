@@ -1,10 +1,6 @@
 -- TUI Main Initialization File
 -- Custom UI for Turtle WoW 1.12.1
 
-TUI = {}
-TUI.version = "1.1.3"
-TUI.loaded = false
-
 -- Event frame for initialization
 local eventFrame = CreateFrame("Frame", "TUIEventFrame")
 
