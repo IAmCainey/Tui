@@ -64,20 +64,18 @@ function TUI.ActionBars:CreateBar(barName, startSlot, numButtons)
         local maxButtonsPerRow = math.floor((frameWidth + spacing) / (buttonSize + spacing))
         maxButtonsPerRow = math.max(1, math.min(maxButtonsPerRow, numButtons))
         
-        -- Update button positions
-        local buttonIndex = 0
+        -- Update button positions using stored button references
         for i = 1, numButtons do
-            local button = self:GetChildren()
-            if button and button:GetID() then
-                local row = math.floor(buttonIndex / maxButtonsPerRow)
-                local col = buttonIndex % maxButtonsPerRow
+            local buttonName = "TUI_ActionButton" .. (startSlot + i - 1)
+            local button = getglobal(buttonName)
+            if button then
+                local row = math.floor((i - 1) / maxButtonsPerRow)
+                local col = (i - 1) % maxButtonsPerRow
                 
                 button:ClearAllPoints()
                 button:SetPoint("TOPLEFT", self, "TOPLEFT", 
                     col * (buttonSize + spacing), 
                     -row * (buttonSize + spacing))
-                    
-                buttonIndex = buttonIndex + 1
             end
         end
         

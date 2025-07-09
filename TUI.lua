@@ -2,7 +2,7 @@
 -- Custom UI for Turtle WoW 1.12.1
 
 TUI = {}
-TUI.version = "1.1.0"
+TUI.version = "1.1.1"
 TUI.loaded = false
 
 -- Event frame for initialization
@@ -66,11 +66,19 @@ function TUI:RefreshUI()
     if self.ActionBars and self:GetConfig("actionBars", "enabled") then
         for barName, frame in pairs(self.ActionBars.bars) do
             if frame and frame.configKey then
-                local isLocked = self:GetConfig(frame.configKey, "locked")
+                local isLocked = false
+                
+                -- Handle table format configKey
+                if type(frame.configKey) == "table" then
+                    isLocked = self:GetConfig(frame.configKey[1], frame.configKey[2], frame.configKey[3], "locked") or false
+                else
+                    isLocked = self:GetConfig(frame.configKey, "locked") or false
+                end
+                
                 if frame.isLocked ~= isLocked then
                     frame.isLocked = isLocked
-                    -- Update visual state manually by calling the update function
-                    if frame.lockButton and frame.lockButton:GetScript("OnClick") then
+                    -- Update visual state manually
+                    if frame.lockButton then
                         -- Trigger lock state update without actually clicking
                         if frame.isLocked then
                             frame.lockButton.icon:SetTexture("Interface\\Buttons\\LockButton-Locked-Up")

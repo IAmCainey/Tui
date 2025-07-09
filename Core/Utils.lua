@@ -40,10 +40,20 @@ end
 
 -- Enhanced frame positioning with size support
 function TUI.Utils:SetAdvancedFramePosition(frame, configKey)
-    local x = TUI:GetConfig(configKey, "x") or 0
-    local y = TUI:GetConfig(configKey, "y") or 0
-    local width = TUI:GetConfig(configKey, "width")
-    local height = TUI:GetConfig(configKey, "height")
+    local x, y, width, height
+    
+    -- Handle both table and varargs config key format
+    if type(configKey) == "table" then
+        x = TUI:GetConfig(configKey[1], configKey[2], configKey[3], "x") or 0
+        y = TUI:GetConfig(configKey[1], configKey[2], configKey[3], "y") or 0
+        width = TUI:GetConfig(configKey[1], configKey[2], configKey[3], "width")
+        height = TUI:GetConfig(configKey[1], configKey[2], configKey[3], "height")
+    else
+        x = TUI:GetConfig(configKey, "x") or 0
+        y = TUI:GetConfig(configKey, "y") or 0
+        width = TUI:GetConfig(configKey, "width")
+        height = TUI:GetConfig(configKey, "height")
+    end
     
     frame:ClearAllPoints()
     frame:SetPoint("CENTER", UIParent, "CENTER", x, y)
@@ -60,13 +70,25 @@ end
 -- Reset frame to default position and size
 function TUI.Utils:ResetFramePosition(frame, configKey, defaults)
     if defaults then
-        TUI:SetConfig(defaults.x or 0, configKey, "x")
-        TUI:SetConfig(defaults.y or 0, configKey, "y")
-        if defaults.width then
-            TUI:SetConfig(defaults.width, configKey, "width")
-        end
-        if defaults.height then
-            TUI:SetConfig(defaults.height, configKey, "height")
+        -- Handle both table and varargs config key format
+        if type(configKey) == "table" then
+            TUI:SetConfig(defaults.x or 0, configKey[1], configKey[2], configKey[3], "x")
+            TUI:SetConfig(defaults.y or 0, configKey[1], configKey[2], configKey[3], "y")
+            if defaults.width then
+                TUI:SetConfig(defaults.width, configKey[1], configKey[2], configKey[3], "width")
+            end
+            if defaults.height then
+                TUI:SetConfig(defaults.height, configKey[1], configKey[2], configKey[3], "height")
+            end
+        else
+            TUI:SetConfig(defaults.x or 0, configKey, "x")
+            TUI:SetConfig(defaults.y or 0, configKey, "y")
+            if defaults.width then
+                TUI:SetConfig(defaults.width, configKey, "width")
+            end
+            if defaults.height then
+                TUI:SetConfig(defaults.height, configKey, "height")
+            end
         end
         
         self:SetAdvancedFramePosition(frame, configKey)
@@ -139,10 +161,8 @@ function TUI.Utils:CreateButton(parent, width, height, texture)
         button.icon = icon
     end
     
-    -- Create cooldown frame
-    local cooldown = CreateFrame("Cooldown", nil, button)
-    cooldown:SetAllPoints(button)
-    button.cooldown = cooldown
+    -- Don't create cooldown frame - not needed for basic buttons
+    -- and "Cooldown" frame type doesn't exist in WoW 1.12.1
     
     return button
 end
@@ -203,7 +223,15 @@ function TUI.Utils:MakeAdvancedDraggable(frame, configKey, options)
     
     -- Store frame reference and config
     frame.configKey = configKey
-    frame.isLocked = TUI:GetConfig(configKey, "locked") or false
+    frame.isLocked = false
+    
+    -- Handle both table and varargs config key format for getting lock state
+    if type(configKey) == "table" then
+        frame.isLocked = TUI:GetConfig(configKey[1], configKey[2], configKey[3], "locked") or false
+    else
+        frame.isLocked = TUI:GetConfig(configKey, "locked") or false
+    end
+    
     frame.canResize = allowResize
     
     -- Create lock/unlock button
@@ -290,7 +318,11 @@ function TUI.Utils:MakeAdvancedDraggable(frame, configKey, options)
         end
         
         -- Save lock state
-        TUI:SetConfig(frame.isLocked, configKey, "locked")
+        if type(configKey) == "table" then
+            TUI:SetConfig(frame.isLocked, configKey[1], configKey[2], configKey[3], "locked")
+        else
+            TUI:SetConfig(frame.isLocked, configKey, "locked")
+        end
     end
     
     -- Lock button click handler
@@ -326,8 +358,14 @@ function TUI.Utils:MakeAdvancedDraggable(frame, configKey, options)
             x = math.floor((x + snapToGrid/2) / snapToGrid) * snapToGrid
             y = math.floor((y + snapToGrid/2) / snapToGrid) * snapToGrid
             
-            TUI:SetConfig(x, configKey, "x")
-            TUI:SetConfig(y, configKey, "y")
+            -- Save position based on configKey type
+            if type(configKey) == "table" then
+                TUI:SetConfig(x, configKey[1], configKey[2], configKey[3], "x")
+                TUI:SetConfig(y, configKey[1], configKey[2], configKey[3], "y")
+            else
+                TUI:SetConfig(x, configKey, "x")
+                TUI:SetConfig(y, configKey, "y")
+            end
             
             -- Reposition with snapped coordinates
             this:ClearAllPoints()
@@ -365,9 +403,14 @@ function TUI.Utils:MakeAdvancedDraggable(frame, configKey, options)
                         frame:SetWidth(newWidth)
                         frame:SetHeight(newHeight)
                         
-                        -- Save size
-                        TUI:SetConfig(newWidth, configKey, "width")
-                        TUI:SetConfig(newHeight, configKey, "height")
+                        -- Save size based on configKey type
+                        if type(configKey) == "table" then
+                            TUI:SetConfig(newWidth, configKey[1], configKey[2], configKey[3], "width")
+                            TUI:SetConfig(newHeight, configKey[1], configKey[2], configKey[3], "height")
+                        else
+                            TUI:SetConfig(newWidth, configKey, "width")
+                            TUI:SetConfig(newHeight, configKey, "height")
+                        end
                         
                         -- Trigger layout update if the frame has one
                         if frame.UpdateLayout then
@@ -411,21 +454,25 @@ end
 -- Global lock/unlock all frames
 function TUI.Utils:ToggleAllFrameLocks(locked)
     local frames = {
-        "actionBars.bars.bar1",
-        "actionBars.bars.bar2", 
-        "actionBars.bars.bar3",
-        "actionBars.bars.bar4",
-        "actionBars.bars.petBar",
-        "actionBars.bars.stanceBar",
-        "unitFrames.player",
-        "unitFrames.target", 
-        "unitFrames.targettarget",
-        "groupFrames.party",
-        "groupFrames.raid"
+        {"actionBars", "bars", "bar1"},
+        {"actionBars", "bars", "bar2"}, 
+        {"actionBars", "bars", "bar3"},
+        {"actionBars", "bars", "bar4"},
+        {"actionBars", "bars", "petBar"},
+        {"actionBars", "bars", "stanceBar"},
+        {"unitFrames", "player"},
+        {"unitFrames", "target"}, 
+        {"unitFrames", "targettarget"},
+        {"groupFrames", "party"},
+        {"groupFrames", "raid"}
     }
     
     for _, configPath in pairs(frames) do
-        TUI:SetConfig(locked, configPath, "locked")
+        if #configPath == 3 then
+            TUI:SetConfig(locked, configPath[1], configPath[2], configPath[3], "locked")
+        elseif #configPath == 2 then
+            TUI:SetConfig(locked, configPath[1], configPath[2], "locked")
+        end
     end
     
     if locked then
