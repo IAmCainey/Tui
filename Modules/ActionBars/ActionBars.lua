@@ -7,37 +7,57 @@ TUI.ActionBars.buttons = {}
 
 -- Initialize action bars
 function TUI:InitializeActionBars()
-    if not self:GetConfig("actionBars", "enabled") then return end
+    if not self:GetConfig("actionBars", "enabled") then 
+        DEFAULT_CHAT_FRAME:AddMessage("|cffff8000TUI:|r Action bars disabled in config")
+        return 
+    end
     
-    self.ActionBars:CreateBars()
-    self.ActionBars:UpdateAll()
+    DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00TUI:|r Initializing action bars...")
+    
+    -- Initialize with error handling
+    local success, err = pcall(function()
+        self.ActionBars:CreateBars()
+        self.ActionBars:UpdateAll()
+    end)
+    
+    if not success then
+        DEFAULT_CHAT_FRAME:AddMessage("|cffff0000TUI:|r Action bars initialization failed: " .. (err or "unknown error"))
+    else
+        DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00TUI:|r Action bars initialized successfully")
+    end
 end
 
 -- Create all action bars
 function TUI.ActionBars:CreateBars()
     -- Main action bar
+    DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00TUI:|r Creating main action bar...")
     self:CreateBar("bar1", 1, 12)
     
     -- Secondary action bars
     if TUI:GetConfig("actionBars", "bars", "bar2", "enabled") then
+        DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00TUI:|r Creating action bar 2...")
         self:CreateBar("bar2", 13, 12)
     end
     
     if TUI:GetConfig("actionBars", "bars", "bar3", "enabled") then
+        DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00TUI:|r Creating action bar 3...")
         self:CreateBar("bar3", 25, 12)
     end
     
     if TUI:GetConfig("actionBars", "bars", "bar4", "enabled") then
+        DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00TUI:|r Creating action bar 4...")
         self:CreateBar("bar4", 37, 12)
     end
     
     -- Pet bar
     if TUI:GetConfig("actionBars", "bars", "petBar", "enabled") then
+        DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00TUI:|r Creating pet bar...")
         self:CreatePetBar()
     end
     
     -- Stance/Form bar
     if TUI:GetConfig("actionBars", "bars", "stanceBar", "enabled") then
+        DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00TUI:|r Creating stance bar...")
         self:CreateStanceBar()
     end
 end
@@ -45,9 +65,18 @@ end
 -- Create a single action bar
 function TUI.ActionBars:CreateBar(barName, startSlot, numButtons)
     local config = TUI:GetConfig("actionBars", "bars", barName)
-    if not config or not config.enabled then return end
+    if not config or not config.enabled then 
+        DEFAULT_CHAT_FRAME:AddMessage("|cffff8000TUI:|r " .. barName .. " is disabled in config")
+        return 
+    end
+    
+    DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00TUI:|r Creating " .. barName .. " (slots " .. startSlot .. "-" .. (startSlot + numButtons - 1) .. ")")
     
     local frame = CreateFrame("Frame", "TUI_" .. barName, UIParent)
+    if not frame then
+        DEFAULT_CHAT_FRAME:AddMessage("|cffff0000TUI:|r Failed to create frame for " .. barName)
+        return
+    end
     
     -- Set initial size (will be overridden by saved config if it exists)
     frame:SetWidth(numButtons * 36 + (numButtons - 1) * 4)
@@ -84,10 +113,15 @@ function TUI.ActionBars:CreateBar(barName, startSlot, numButtons)
     end
     
     -- Set position and size from config
-    TUI.Utils:SetAdvancedFramePosition(frame, {"actionBars", "bars", barName})
+    local success, err = pcall(TUI.Utils.SetAdvancedFramePosition, TUI.Utils, frame, {"actionBars", "bars", barName})
+    if not success then
+        DEFAULT_CHAT_FRAME:AddMessage("|cffff8000TUI:|r Failed to set position for " .. barName .. ": " .. (err or "unknown error"))
+        -- Fallback to basic positioning
+        frame:SetPoint("CENTER", UIParent, "CENTER", 0, -200)
+    end
     
     -- Make advanced draggable with resize capability
-    TUI.Utils:MakeAdvancedDraggable(frame, {"actionBars", "bars", barName}, {
+    success, err = pcall(TUI.Utils.MakeAdvancedDraggable, TUI.Utils, frame, {"actionBars", "bars", barName}, {
         allowResize = true,
         minWidth = 40,  -- At least 1 button
         maxWidth = 12 * 40,  -- At most 12 buttons wide
@@ -96,22 +130,38 @@ function TUI.ActionBars:CreateBar(barName, startSlot, numButtons)
         snapToGrid = 4
     })
     
+    if not success then
+        DEFAULT_CHAT_FRAME:AddMessage("|cffff8000TUI:|r Failed to make " .. barName .. " draggable: " .. (err or "unknown error"))
+    end
+    
     -- Create buttons
+    DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00TUI:|r Creating " .. numButtons .. " buttons for " .. barName)
+    local buttonsCreated = 0
+    
     for i = 1, numButtons do
         local button = self:CreateActionButton(frame, startSlot + i - 1, i)
         if button then
             local row = math.floor((i - 1) / (config.buttonsPerRow or 12))
             local col = (i - 1) % (config.buttonsPerRow or 12)
             button:SetPoint("TOPLEFT", frame, "TOPLEFT", col * 40, -row * 40)
+            buttonsCreated = buttonsCreated + 1
+        else
+            DEFAULT_CHAT_FRAME:AddMessage("|cffff8000TUI:|r Failed to create button " .. i .. " for " .. barName)
         end
     end
     
+    DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00TUI:|r Created " .. buttonsCreated .. "/" .. numButtons .. " buttons for " .. barName)
+    
     -- Initial layout update
     if frame.UpdateLayout then
-        frame:UpdateLayout()
+        local success, err = pcall(frame.UpdateLayout, frame)
+        if not success then
+            DEFAULT_CHAT_FRAME:AddMessage("|cffff8000TUI:|r Layout update failed for " .. barName .. ": " .. (err or "unknown error"))
+        end
     end
     
     self.bars[barName] = frame
+    DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00TUI:|r " .. barName .. " created successfully")
 end
 
 -- Create action button
@@ -421,15 +471,18 @@ function TUI.ActionBars:UpdateAll()
             local scale = TUI:GetConfig("actionBars", "scale") or 1.0
             frame:SetScale(scale)
             
-            -- Update position
-            TUI.Utils:SetFramePosition(frame, "actionBars", "bars", barName)
+            -- Update position using the advanced positioning system
+            TUI.Utils:SetAdvancedFramePosition(frame, {"actionBars", "bars", barName})
         end
     end
     
     -- Update button settings
     for _, button in pairs(self.buttons) do
         if button and ActionButton_UpdateHotkeys then
-            ActionButton_UpdateHotkeys(button, TUI:GetConfig("actionBars", "showHotkeys"))
+            local success, err = pcall(ActionButton_UpdateHotkeys, button, TUI:GetConfig("actionBars", "showHotkeys"))
+            if not success then
+                DEFAULT_CHAT_FRAME:AddMessage("|cffff8000TUI:|r ActionButton_UpdateHotkeys failed: " .. (err or "unknown error"))
+            end
         end
     end
 end

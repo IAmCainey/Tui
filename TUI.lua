@@ -2,7 +2,7 @@
 -- Custom UI for Turtle WoW 1.12.1
 
 TUI = {}
-TUI.version = "1.1.2"
+TUI.version = "1.1.3"
 TUI.loaded = false
 
 -- Event frame for initialization
@@ -133,11 +133,38 @@ function SlashCmdList.TUI(msg)
         TUI.Utils:ResetFramePosition(TUI.ActionBars.bars.stanceBar, {"actionBars", "bars", "stanceBar"}, {x = -400, y = -200, width = 400, height = 36})
         
         DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00TUI:|r Frame positions reset!")
+    elseif command == "debug" then
+        -- Debug information
+        DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00TUI Debug Information:|r")
+        DEFAULT_CHAT_FRAME:AddMessage("Loaded: " .. tostring(TUI.loaded))
+        DEFAULT_CHAT_FRAME:AddMessage("ActionBars enabled: " .. tostring(TUI:GetConfig("actionBars", "enabled")))
+        
+        if TUI.ActionBars then
+            local barCount = 0
+            for barName, frame in pairs(TUI.ActionBars.bars) do
+                if frame then
+                    barCount = barCount + 1
+                    DEFAULT_CHAT_FRAME:AddMessage("  " .. barName .. ": " .. tostring(frame:GetName()) .. " (" .. frame:GetWidth() .. "x" .. frame:GetHeight() .. ")")
+                end
+            end
+            DEFAULT_CHAT_FRAME:AddMessage("Total bars created: " .. barCount)
+            
+            local buttonCount = 0
+            for _, button in pairs(TUI.ActionBars.buttons) do
+                if button then
+                    buttonCount = buttonCount + 1
+                end
+            end
+            DEFAULT_CHAT_FRAME:AddMessage("Total buttons created: " .. buttonCount)
+        else
+            DEFAULT_CHAT_FRAME:AddMessage("ActionBars module not initialized")
+        end
     elseif command == "config" or command == "" then
         DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00TUI v" .. TUI.version .. " Commands:|r")
         DEFAULT_CHAT_FRAME:AddMessage("|cff00ffff/tui lock|r - Lock all frames (prevent moving/resizing)")
         DEFAULT_CHAT_FRAME:AddMessage("|cff00ffff/tui unlock|r - Unlock all frames (allow moving/resizing)")
         DEFAULT_CHAT_FRAME:AddMessage("|cff00ffff/tui reset|r - Reset all frame positions to defaults")
+        DEFAULT_CHAT_FRAME:AddMessage("|cff00ffff/tui debug|r - Show debug information")
         DEFAULT_CHAT_FRAME:AddMessage("|cffff8000Note:|r Individual frames can be locked/unlocked using the lock button in their top-right corner")
         DEFAULT_CHAT_FRAME:AddMessage("|cffff8000Note:|r Drag frames to move them, click the bottom-right corner to cycle resize")
         DEFAULT_CHAT_FRAME:AddMessage("|cffff8000Lock indicators:|r Red = Locked, White = Unlocked")
